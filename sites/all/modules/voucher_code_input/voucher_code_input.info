@@ -1,0 +1,6 @@
+; $id$
+
+name = Voucher code input
+description = Voucher code multiple input fields
+dependencies[] = field_ui
+core = 7.x

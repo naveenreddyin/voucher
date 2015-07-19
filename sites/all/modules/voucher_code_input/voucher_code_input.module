@@ -1,0 +1,104 @@
+<?php
+// $id$
+
+/**
+ * implementation of hook_field_info().
+ */
+function voucher_code_input_field_info(){
+    return array(
+        'voucher_code_input' => array(
+            'label' => t('Voucher code input'),
+            'description' => t('For multiple inputs of voucher codes'),
+            'default_widget' => 'voucher_code_input_form',
+            'default_formatter' => 'voucher_code_input_default',
+        ),
+    );
+}
+
+/**
+ * implements hook_field_is_empty().
+ */
+function voucher_code_input_field_is_empty($item, $field){
+    if($field['type'] == 'voucher_code_input'){
+
+        if(empty($item['code'])){
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+/**
+ * implementation of hook_field_widget_info().
+ */
+function voucher_code_input_field_widget_info(){
+    return array(
+        'voucher_code_input_form' => array(
+            'label' => t('voucher code input form'),
+            'field types' => array('voucher_code_input'),
+            'behaviors' => array(
+                'multiple values' => FIELD_BEHAVIOR_DEFAULT,
+                'default value' => FIELD_BEHAVIOR_DEFAULT,
+            ),
+        ),
+    );
+}
+
+/**
+ * implement hook_field_widget_form().
+ */
+function voucher_code_input_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element){
+    $base = $element;
+    if($instance['widget']['type'] == 'voucher_code_input_form'){
+        $widget = $instance['widget'];
+        $settings = $widget['settings'];
+
+        $element['code'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Code'),
+            '#default_value' => isset($items[$delta]['code']) ? $items[$delta]['code'] : NULL,
+            '#element_validate' => array('_voucher_code_input_validate'),
+        );
+    }
+
+    return $element;
+}
+
+/**
+ * Validation callback for voucher code input field
+ */
+function _voucher_code_input_validate($element, &$form_state, $form){
+    $value = $element['#value'];
+    if(!empty($value) && !ctype_upper($value)){
+        form_error($element, t('Please type voucher code in all capital letter.'));
+    }
+}
+
+/**
+ * Implementation hook_field_formatter_info().
+ */
+function voucher_code_input_field_formatter_info(){
+    return array(
+        'voucher_code_input_default' => array(
+            'label' => t('Default'),
+            'field types' => array('voucher_code_input'),
+        ),
+    );
+}
+
+/**
+ *  Implementation of hook_field_formatter_view().
+ */
+function voucher_code_input_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display){
+    $element = array();
+
+    switch($display['type']){
+        case 'voucher_code_input_default':
+            foreach($items as $delta => $item){
+                $element[$delta] = array('#markup' => strip_tags($item['code']));
+            }
+            break;
+    }
+    return $element;
+
+}

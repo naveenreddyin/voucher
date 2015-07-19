@@ -1,0 +1,39 @@
+<?php
+// $id$
+
+/**
+  * hook_install().
+  */
+  function voucher_code_input_install(){
+
+  }
+
+
+/**
+  * hook_uninstall().
+  */
+  function voucher_code_input_uninstall(){
+
+    }
+
+/**
+  * hook_field_schema().
+  */
+  function voucher_code_input_field_schema($field){
+    if ($field['type'] == 'voucher_code_input'){
+        $schema['columns']['code'] = array(
+            'type' => 'varchar',
+            'length' => '255',
+            'not null' => FALSE,
+        );
+
+        $schema['indexes'] = array(
+            'code' => array('code'),
+        );
+        return $schema;
+    }
+
+
+  }
+
+
